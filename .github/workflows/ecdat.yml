@@ -13,6 +13,7 @@ jobs:
     permissions:
       contents: read
       security-events: write   # so findings appear on the diff
+      pull-requests: write     # so ECDAT can review the pull request
 
     steps:
       - uses: actions/checkout@v4
@@ -20,6 +21,7 @@ jobs:
       - name: Scan for cryptography
         env:
           ECDAT_TOKEN: ${{ secrets.ECDAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           ecdat login --server http://localhost:9000 --token "$ECDAT_TOKEN"
