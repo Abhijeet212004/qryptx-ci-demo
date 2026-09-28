@@ -8,7 +8,7 @@ public class RefundToken {
 
     /** Derives the refund token id. */
     public byte[] tokenId(String reference) throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
         return digest.digest(reference.getBytes("UTF-8"));
     }
 
