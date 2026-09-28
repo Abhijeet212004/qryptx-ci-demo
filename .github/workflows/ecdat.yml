@@ -1,0 +1,32 @@
+name: Cryptographic inventory
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ecdat:
+    # A self-hosted runner, so the scan reaches the ECDAT dashboard on this
+    # network and the source never leaves the machine that owns it.
+    runs-on: self-hosted
+    permissions:
+      contents: read
+      security-events: write   # so findings appear on the diff
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for cryptography
+        env:
+          ECDAT_TOKEN: ${{ secrets.ECDAT_TOKEN }}
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          ecdat login --server http://localhost:9000 --token "$ECDAT_TOKEN"
+          ecdat ci . --project ci-demo
+
+      - name: Upload findings to code scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ecdat-reports/ecdat.sarif
